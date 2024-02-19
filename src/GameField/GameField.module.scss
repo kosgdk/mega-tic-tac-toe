@@ -15,6 +15,11 @@
     transition: transform 0.5s;
 }
 
+.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
 @media (max-width: 768px) {
     .field {
         &:not(.child-field) {

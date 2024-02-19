@@ -1,4 +1,4 @@
-import { CellCoordinates, CellCoordinatesStringRepresentation, CellValue, ChildField, Field } from '@/Game/useGame.ts';
+import { CellCoordinates, CellCoordinatesStringRepresentation, CellValue, ChildField, Field } from '@/types.ts';
 
 export const generateEmptyField = (size: number): Field =>
     Array.from({ length: size }, () =>
@@ -8,7 +8,7 @@ export const generateEmptyField = (size: number): Field =>
 export const generateEmptyChildField = (size: number): ChildField =>
     Array.from({ length: size }, () => Array.from({ length: size }, () => ({ value: null })));
 
-export const getWinner = (childField: ChildField): CellValue | null => {
+export const getWinnerCellValueChar = (childField: ChildField): CellValue | null => {
     const rows = childField.map((row) => row.map((cell) => cell.value));
     const columns = childField[0].map((_, i) => childField.map((row) => row[i].value));
     const diagonals = [
@@ -28,11 +28,11 @@ export const getWinner = (childField: ChildField): CellValue | null => {
 export const getParentCellsAvailableForMove = (
     field: Field,
     lastMoveChildCellCoordinates: CellCoordinates | null
-): Set<CellCoordinatesString> => {
+): Set<CellCoordinatesStringRepresentation> => {
     if (lastMoveChildCellCoordinates) {
         const directParentCell = field[lastMoveChildCellCoordinates.row][lastMoveChildCellCoordinates.column];
         if (!directParentCell.value) {
-            const coordinatesString: CellCoordinatesString = `${lastMoveChildCellCoordinates.row}-${lastMoveChildCellCoordinates.column}`;
+            const coordinatesString: CellCoordinatesStringRepresentation = `${lastMoveChildCellCoordinates.row}-${lastMoveChildCellCoordinates.column}`;
             return new Set([coordinatesString]);
         }
     }
@@ -41,11 +41,11 @@ export const getParentCellsAvailableForMove = (
         field.reduce((result, row, rowIndex) => {
             row.forEach((cell, columnIndex) => {
                 if (!cell.value) {
-                    const coordinatesString: CellCoordinatesString = `${rowIndex}-${columnIndex}`;
+                    const coordinatesString: CellCoordinatesStringRepresentation = `${rowIndex}-${columnIndex}`;
                     result.push(coordinatesString);
                 }
             });
             return result;
-        }, [] as CellCoordinatesString[])
+        }, [] as CellCoordinatesStringRepresentation[])
     );
 };
