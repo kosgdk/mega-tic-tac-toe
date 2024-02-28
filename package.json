@@ -1,9 +1,9 @@
 {
-    "name": "template-ui",
+    "name": "mega-tic-tac-toe",
     "private": true,
     "version": "0.0.1",
     "type": "module",
-    "homepage": "https://kosgdk.github.io/2048",
+    "homepage": "https://kosgdk.github.io/mega-tic-tac-toe",
     "scripts": {
         "dev": "vite",
         "build": "vite build",
