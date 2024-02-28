@@ -29,7 +29,7 @@ const Server = () => {
                     />
                     <GameField
                         field={field}
-                        disabled={isClientMove}
+                        disabled={!!winner || isClientMove}
                         onChildCellClick={onChildCellClick}
                         parentCellsAvailableForMove={parentCellsAvailableForMove}
                     />

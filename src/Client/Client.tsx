@@ -31,14 +31,14 @@ const Client = ({ serverPeerId }: ClientProps) => {
             {showField ? (
                 <>
                     <GameStatus
-                        currentPlayer={serverPlayer!}
-                        opponentPlayer={clientPlayer!}
+                        currentPlayer={clientPlayer!}
+                        opponentPlayer={serverPlayer!}
                         isCurrentPlayerTurn={isClientMove}
                         winner={winner}
                     />
                     <GameField
                         field={field}
-                        disabled={!isClientMove}
+                        disabled={!!winner || !isClientMove}
                         onChildCellClick={onChildCellClick}
                         parentCellsAvailableForMove={parentCellsAvailableForMove}
                     />
