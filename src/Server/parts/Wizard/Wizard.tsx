@@ -1,5 +1,6 @@
 import styles from './Wizard.module.scss';
 import { ChangeEvent } from 'react';
+import { URL_GAME_PARAM_NAME } from '@/constants.ts';
 
 export type WizardProps = {
     name: string;
@@ -9,7 +10,7 @@ export type WizardProps = {
 };
 
 export const Wizard = ({ name, peerId, onNameChange, onNameChangeComplete }: WizardProps) => {
-    const shareableUrl = `${window.location.href}${peerId}`;
+    const shareableUrl = `${window.location.href}?${URL_GAME_PARAM_NAME}=${peerId}`;
 
     const onShareClick = () => {
         navigator.share({
