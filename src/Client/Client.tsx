@@ -24,8 +24,6 @@ const Client = ({ serverPeerId }: ClientProps) => {
 
     const showField = field && clientPlayer && serverPlayer;
 
-    console.log(clientPlayer, serverPlayer, field);
-
     return (
         <div className={styles.container}>
             {showField ? (

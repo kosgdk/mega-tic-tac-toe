@@ -142,7 +142,7 @@ export const useServer = () => {
         }
     });
 
-    const initPeer = useCallback(() => {
+    const initPeer = useEvent(() => {
         const peer = new Peer();
 
         peer.on('open', (id) => {
@@ -160,7 +160,7 @@ export const useServer = () => {
                 console.log('Client disconnected', conn.metadata.id);
             });
         });
-    }, [onClientMessageReceived, onClientConnectionEstablished, onClientReady, onClientMove]);
+    });
 
     return {
         field,

@@ -9,7 +9,7 @@ export type WizardProps = {
 };
 
 export const Wizard = ({ name, peerId, onNameChange, onNameChangeComplete }: WizardProps) => {
-    const shareableUrl = `${window.location.origin}/${peerId}`;
+    const shareableUrl = `${window.location.href}${peerId}`;
 
     const onShareClick = () => {
         navigator.share({
