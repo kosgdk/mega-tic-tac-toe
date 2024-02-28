@@ -33,7 +33,7 @@ export enum MessageType {
     PONG = 'PONG',
     GAME_STATE = 'GAME_STATE',
     GAME_MOVE = 'GAME_MOVE',
-    CLIENT_PLAYER_NAME = 'CLIENT_PLAYER_NAME'
+    CLIENT_PLAYER_READY = 'CLIENT_PLAYER_READY'
 }
 
 export type BaseMessage = {
@@ -46,9 +46,9 @@ export type PingMessage = BaseMessage & {
     payload?: never;
 };
 
-export type ClientPlayerNameMessage = BaseMessage & {
-    type: MessageType.CLIENT_PLAYER_NAME;
-    payload: string;
+export type ClientReadyMessage = Omit<BaseMessage, 'payload'> & {
+    type: MessageType.CLIENT_PLAYER_READY;
+    payload?: never;
 };
 
 export type GameStateMessage = BaseMessage & {

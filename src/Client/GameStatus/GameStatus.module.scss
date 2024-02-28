@@ -1,0 +1,30 @@
+.container {
+    width: 100%;
+    margin-top: 16px;
+}
+
+.players {
+    display: flex;
+    flex-direction: column;
+    row-gap: 8px;
+}
+
+.status {
+    margin: 16px 0;
+    text-align: center;
+}
+
+.player-info {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+
+    svg {
+        $size: 18px;
+        flex-shrink: 0;
+        width: $size;
+        height: $size;
+        margin-right: 8px;
+    }
+}

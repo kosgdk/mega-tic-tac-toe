@@ -1,12 +1,10 @@
-import { ChangeEvent, useCallback, useRef, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { CellValueChar, FIELD_SIZE } from '@/constants.ts';
-import { chain, cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash';
 import {
     BaseMessage,
     CellCoordinates,
     CellCoordinatesStringRepresentation,
-    CellValue,
-    ClientPlayerNameMessage,
     Field,
     GameMoveMessage,
     GameStateMessage,
@@ -35,23 +33,11 @@ export const useServer = () => {
     });
     const [field, setField] = useState<Field>(generateEmptyField(FIELD_SIZE));
     const [isClientMove, setIsClientMove] = useState(serverPlayer.cellValueChar === CellValueChar.O);
-    const [winner, setWinner] = useState<CellValue | null>(null);
+    const [winner, setWinner] = useState<Player | null>(null);
     const [parentCellsAvailableForMove, setParentCellsAvailableForMove] = useState<
         Set<CellCoordinatesStringRepresentation>
     >(getParentCellsAvailableForMove(field, null));
-
-    const fieldToFlatString = (field: Field) =>
-        chain(field)
-            .flatten()
-            .map((cell) =>
-                chain(cell.field)
-                    .flatten()
-                    .map((childCell) => childCell.value ?? '.')
-                    .value()
-                    .join('')
-            )
-            .join('\n')
-            .value();
+    const [isClientReady, setIsClientReady] = useState(false);
 
     const onChildCellClick = useEvent(
         (parentCellCoordinates: CellCoordinates, childCellCoordinates: CellCoordinates) => {
@@ -63,12 +49,11 @@ export const useServer = () => {
                 : serverPlayer.cellValueChar;
             targetParentCell.value = getWinnerCellValueChar(targetParentCell.field);
 
-            console.log(fieldToFlatString(effectiveField));
             setField(effectiveField);
 
             const winner = getWinnerCellValueChar(effectiveField);
             if (winner) {
-                setWinner(winner);
+                setWinner(serverPlayer.cellValueChar === winner ? serverPlayer : clientPlayer);
             }
 
             const parentCellsAvailableForMove = getParentCellsAvailableForMove(effectiveField, childCellCoordinates);
@@ -95,34 +80,39 @@ export const useServer = () => {
     const onClientConnectionEstablished = useEvent((connection: DataConnection) => {
         console.log('Client connection established', connection.metadata.id);
         clientConnection.current = connection;
-        setClientPlayer((prev) => ({ ...prev, peerId: connection.metadata.id }));
+        setClientPlayer((prev) => ({
+            ...prev,
+            peerId: connection.metadata.id,
+            name: connection.metadata.name
+        }));
     });
 
-    const onClientNameReceived = useCallback(
-        (message: ClientPlayerNameMessage) => {
-            console.log('Client name received', message.payload);
-            let client: Player | undefined = undefined;
-            setClientPlayer((prev) => {
-                client = { ...prev, name: message.payload };
-                return client;
-            });
+    const sentInitialGameStateToClient = useEvent(() => {
+        const gameStateMessage: GameStateMessage = {
+            type: MessageType.GAME_STATE,
+            payload: {
+                field,
+                winner: null,
+                parentCellsAvailableForMove: Array.from(parentCellsAvailableForMove),
+                isClientMove,
+                clientPlayer,
+                serverPlayer
+            }
+        };
+        console.log('Sending game state to client', gameStateMessage);
+        clientConnection.current!.send(gameStateMessage);
+    });
 
-            const gameStateMessage: GameStateMessage = {
-                type: MessageType.GAME_STATE,
-                payload: {
-                    field,
-                    winner: null,
-                    parentCellsAvailableForMove: Array.from(parentCellsAvailableForMove),
-                    isClientMove,
-                    clientPlayer: client!,
-                    serverPlayer
-                }
-            };
-            console.log('Sending game state to client', gameStateMessage);
-            clientConnection.current!.send(gameStateMessage);
-        },
-        [field, isClientMove, serverPlayer, parentCellsAvailableForMove]
-    );
+    useEffect(() => {
+        if (isClientReady && clientPlayer) {
+            sentInitialGameStateToClient();
+        }
+    }, [isClientReady, clientPlayer, sentInitialGameStateToClient]);
+
+    const onClientReady = useEvent(() => {
+        console.log('Client ready');
+        setIsClientReady(true);
+    });
 
     const onClientMove = useCallback(
         (message: GameMoveMessage) => {
@@ -138,8 +128,8 @@ export const useServer = () => {
 
     const onClientMessageReceived = useEvent((message: BaseMessage) => {
         switch (message.type) {
-            case MessageType.CLIENT_PLAYER_NAME: {
-                onClientNameReceived(message as ClientPlayerNameMessage);
+            case MessageType.CLIENT_PLAYER_READY: {
+                onClientReady();
                 break;
             }
             case MessageType.GAME_MOVE: {
@@ -170,7 +160,7 @@ export const useServer = () => {
                 console.log('Client disconnected', conn.metadata.id);
             });
         });
-    }, [onClientMessageReceived, onClientConnectionEstablished, onClientNameReceived, onClientMove]);
+    }, [onClientMessageReceived, onClientConnectionEstablished, onClientReady, onClientMove]);
 
     return {
         field,

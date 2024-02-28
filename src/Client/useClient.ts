@@ -4,7 +4,7 @@ import {
     BaseMessage,
     CellCoordinates,
     CellCoordinatesStringRepresentation,
-    ClientPlayerNameMessage,
+    ClientReadyMessage,
     Field,
     GameStateMessage,
     MessageType,
@@ -61,18 +61,18 @@ export const useClient = (serverPeerId: string) => {
         peer.on('open', (peerId) => {
             const _connection = peer.connect(serverPeerId!, {
                 metadata: {
-                    id: peerId
+                    id: peerId,
+                    name
                 }
             });
 
             connection.current = _connection;
 
             _connection.on('open', () => {
-                const clientPlayerNameMessage: ClientPlayerNameMessage = {
-                    type: MessageType.CLIENT_PLAYER_NAME,
-                    payload: name
+                const clientReadyMessage: ClientReadyMessage = {
+                    type: MessageType.CLIENT_PLAYER_READY
                 };
-                _connection.send(clientPlayerNameMessage);
+                _connection.send(clientReadyMessage);
             });
 
             _connection.on('data', (data) => {

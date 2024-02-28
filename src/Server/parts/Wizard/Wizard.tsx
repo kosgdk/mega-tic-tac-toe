@@ -9,15 +9,23 @@ export type WizardProps = {
 };
 
 export const Wizard = ({ name, peerId, onNameChange, onNameChangeComplete }: WizardProps) => {
+    const shareableUrl = `${window.location.origin}/${peerId}`;
+
+    const onShareClick = () => {
+        navigator.share({
+            url: shareableUrl
+        });
+    };
+
     return (
         <div className={styles.container}>
             {peerId ? (
-                <div>
-                    <div>{`${window.location.origin}/${peerId}`}</div>
-                    <button>Share</button>
-                </div>
+                <>
+                    <div>{shareableUrl}</div>
+                    <button onClick={onShareClick}>Share</button>
+                </>
             ) : (
-                <div>
+                <>
                     <input
                         value={name}
                         onChange={onNameChange}
@@ -29,7 +37,7 @@ export const Wizard = ({ name, peerId, onNameChange, onNameChangeComplete }: Wiz
                     >
                         Continue
                     </button>
-                </div>
+                </>
             )}
         </div>
     );

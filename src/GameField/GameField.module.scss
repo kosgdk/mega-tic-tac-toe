@@ -1,6 +1,4 @@
 .field {
-    --min-field-size: 300px;
-    --field-size: 400px;
     --gap: 2px;
 
     display: grid;
@@ -8,9 +6,9 @@
     grid-template-columns: repeat(var(--field-size-cells), 1fr);
     gap: var(--gap);
     width: var(--field-size);
-    min-width: var(--min-field-size);
+    min-width: var(--field-size);
     height: var(--field-size);
-    min-height: var(--min-field-size);
+    min-height: var(--field-size);
     background: #858585;
     transition: transform 0.5s;
 }
@@ -18,12 +16,4 @@
 .disabled {
     opacity: 0.5;
     pointer-events: none;
-}
-
-@media (max-width: 768px) {
-    .field {
-        &:not(.child-field) {
-            --field-size: min(calc(100vw - 40px), 400px);
-        }
-    }
 }

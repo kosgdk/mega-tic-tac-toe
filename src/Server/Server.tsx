@@ -2,6 +2,7 @@ import styles from './Server.module.scss';
 import { GameField } from '@/GameField/GameField.tsx';
 import { Wizard } from '@/Server/parts/Wizard/Wizard.tsx';
 import { useServer } from '@/Server/useServer.ts';
+import { GameStatus } from '@/Client/GameStatus/GameStatus.tsx';
 
 const Server = () => {
     const {
@@ -18,7 +19,22 @@ const Server = () => {
 
     return (
         <div className={styles.container}>
-            {!clientPlayer.peerId && (
+            {clientPlayer.peerId ? (
+                <>
+                    <GameStatus
+                        currentPlayer={serverPlayer}
+                        opponentPlayer={clientPlayer}
+                        isCurrentPlayerTurn={!isClientMove}
+                        winner={winner}
+                    />
+                    <GameField
+                        field={field}
+                        disabled={isClientMove}
+                        onChildCellClick={onChildCellClick}
+                        parentCellsAvailableForMove={parentCellsAvailableForMove}
+                    />
+                </>
+            ) : (
                 <Wizard
                     name={serverPlayer.name}
                     peerId={serverPlayer.peerId}
@@ -26,15 +42,6 @@ const Server = () => {
                     onNameChangeComplete={onServerPlayerNameChangeComplete}
                 />
             )}
-
-            {winner && <h1 className={styles.winner}>{`${winner} won!`}</h1>}
-
-            <GameField
-                field={field}
-                disabled={isClientMove}
-                onChildCellClick={onChildCellClick}
-                parentCellsAvailableForMove={parentCellsAvailableForMove}
-            />
         </div>
     );
 };

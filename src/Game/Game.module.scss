@@ -1,0 +1,16 @@
+.container {
+    --field-size: 400px;
+    display: flex;
+    flex-direction: column;
+
+    width: var(--field-size);
+    min-width: var(--field-size);
+    height: 100vh;
+    margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+    .container {
+        --field-size: min(calc(100vw - 40px), 400px);
+    }
+}
