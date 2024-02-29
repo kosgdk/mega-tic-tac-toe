@@ -143,7 +143,9 @@ export const useServer = () => {
     });
 
     const initPeer = useEvent(() => {
-        const peer = new Peer();
+        const peer = new Peer({
+            debug: 3
+        });
 
         peer.on('open', (id) => {
             setServerPlayer((prev) => ({ ...prev, peerId: id }));

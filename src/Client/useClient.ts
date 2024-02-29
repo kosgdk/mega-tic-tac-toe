@@ -56,7 +56,9 @@ export const useClient = (serverPeerId: string) => {
     );
 
     const connectToServer = useCallback(() => {
-        const peer = new Peer();
+        const peer = new Peer({
+            debug: 3
+        });
 
         peer.on('open', (peerId) => {
             const _connection = peer.connect(serverPeerId!, {
